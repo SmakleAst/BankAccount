@@ -2,16 +2,16 @@
 {
     public class IndividualEntity
     {
-        //public int Id { get; set; }
-        //public фамилия
-        //public имя
-        //public отчество
-        //public дата рождения
-        //public адрес
-        //public телефон,
-        //public пол
-        //public CheckAccountEntity (должник)
-        //public фото
-        //public является ли сотрудником банка
+        public int Id { get; set; }
+        public string Surname { get; set; }
+        public string Name { get; set; }
+        public string Middlename { get; set; }
+        public DateTime BirthDay { get; set; }
+        public string Address { get; set; }
+        public string Phone { get; set; }
+        public Gender Gender { get; set; }
+        public string Status { get; set; }//(должник)
+        public string PhotoFilePath { get; set; }
+        public bool IsBankEmployee { get; set; }
     }
 }
