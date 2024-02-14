@@ -1,4 +1,6 @@
-﻿namespace BankAccount.Domain.Entity
+﻿using BankAccount.Domain.Enum;
+
+namespace BankAccount.Domain.Entity
 {
     public class LegalEntity
     {
@@ -9,5 +11,7 @@
         public string ChiefAccountantFullname { get; set; }
         public string Phone { get; set; }
         public Ownerships OwnershipsForm { get; set; }
+        public List<CheckAccountEntity> CheckAccounts { get; set; }
+        public List<SaveAccountEntity> SaveAccounts { get; set; }
     }
 }

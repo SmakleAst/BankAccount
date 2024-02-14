@@ -1,4 +1,6 @@
-﻿namespace BankAccount.Domain.Entity
+﻿using BankAccount.Domain.Enum;
+
+namespace BankAccount.Domain.Entity
 {
     public class IndividualEntity
     {
@@ -13,5 +15,7 @@
         public bool Status { get; set; }//(должник)
         public string PhotoFilePath { get; set; }
         public bool IsBankEmployee { get; set; }
+        public List<CheckAccountEntity> CheckAccounts { get; set; }
+        public List<SaveAccountEntity> SaveAccounts { get; set; }
     }
 }
