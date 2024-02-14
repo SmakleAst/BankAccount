@@ -7,9 +7,9 @@ namespace BankAccount.DAL
     {
         public AppDbContext(DbContextOptions options) : base(options) { }
 
-        DbSet<CheckAccountEntity> CheckAccounts { get; set; }
-        DbSet<SaveAccountEntity> SaveAccounts { get; set; }
-        DbSet<LegalEntity> Legals { get; set; }
-        DbSet<IndividualEntity> Individuals { get; set; }
+        public DbSet<CheckAccountEntity> CheckAccounts { get; set; }
+        public DbSet<SaveAccountEntity> SaveAccounts { get; set; }
+        public DbSet<LegalEntity> Legals { get; set; }
+        public DbSet<IndividualEntity> Individuals { get; set; }
     }
 }
