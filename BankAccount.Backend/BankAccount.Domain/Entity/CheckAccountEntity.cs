@@ -10,5 +10,6 @@
         public int? LegalClientId { get; set; }
         public LegalEntity? LegalClient { get; set; }
         public decimal Balance { get; set; }
+        public CheckAccountType Type { get; set; }
     }
 }
