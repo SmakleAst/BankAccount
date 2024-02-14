@@ -10,7 +10,7 @@
         public string Address { get; set; }
         public string Phone { get; set; }
         public Gender Gender { get; set; }
-        public string Status { get; set; }//(должник)
+        public bool Status { get; set; }//(должник)
         public string PhotoFilePath { get; set; }
         public bool IsBankEmployee { get; set; }
     }
