@@ -1,4 +1,6 @@
-﻿namespace BankAccount.Domain.Entity
+﻿using BankAccount.Domain.Enum;
+
+namespace BankAccount.Domain.Entity
 {
     public class CheckAccountEntity
     {
