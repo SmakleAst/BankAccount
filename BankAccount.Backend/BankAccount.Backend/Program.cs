@@ -15,10 +15,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IBaseRepository<CheckAccountEntity>, CheckAccountRepository>();
-builder.Services.AddScoped<IBaseRepository<SaveAccountEntity>, SaveAccountRepository>();
-builder.Services.AddScoped<IBaseRepository<LegalEntity>, LegalRepository>();
-builder.Services.AddScoped<IBaseRepository<IndividualEntity>, IndividualRepository>();
+builder.Services.AddScoped<IBaseRepository<AccountEntity>, AccountRepository>();
+builder.Services.AddScoped<IBaseRepository<ClientEntity>, ClientRepository>();
+builder.Services.AddScoped<IBaseRepository<LegalClientEntity>, LegalClientRepository>();
+builder.Services.AddScoped<IBaseRepository<IndividualClientEntity>, IndividualClientRepository>();
+builder.Services.AddScoped<IBaseRepository<TransactionEntity>, TransactionRepository>();
+builder.Services.AddScoped<IBaseRepository<InterestRateEntity>, InterestRateRepository>();
 builder.Services.AddScoped<IBankService, BankService>();
 
 var connectionString = builder.Configuration.GetConnectionString("MSSQL");

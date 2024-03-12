@@ -1,9 +1,12 @@
 ﻿using BankAccount.Domain.Enum;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BankAccount.Domain.Entity
 {
-    public class LegalEntity
+    public class LegalClientEntity
     {
+        [Key, ForeignKey("Client")]
         public int Id { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
@@ -11,7 +14,7 @@ namespace BankAccount.Domain.Entity
         public string ChiefAccountantFullname { get; set; }
         public string Phone { get; set; }
         public Ownerships OwnershipsForm { get; set; }
-        public List<CheckAccountEntity> CheckAccounts { get; set; }
-        public List<SaveAccountEntity> SaveAccounts { get; set; }
+
+        public virtual ClientEntity Client { get; set; }
     }
 }
