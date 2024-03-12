@@ -12,7 +12,6 @@ namespace BankAccount.Domain.Entity
         public decimal Amount { get; set; }
         public DateTime TransactionDate { get; set; }
 
-        // Ссылка на счет
         public virtual AccountEntity Account { get; set; }
     }
 }
