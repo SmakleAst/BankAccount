@@ -8,6 +8,8 @@ using BankAccount.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net;
+using System.Numerics;
 
 namespace BankAccount.Service.Implementations
 {
@@ -134,9 +136,9 @@ namespace BankAccount.Service.Implementations
                 }
 
                 account.AccountNumber = model.AccountNumber;
-                account.OpeningDate = model.OpeningDate;
-                account.Balance = model.Balance;
-                account.AccountType = model.AccountType;
+                account.OpeningDate = model.OpeningDate.Value;
+                account.Balance = model.Balance.Value;
+                account.AccountType = model.AccountType.Value;
                 account.CreditLimit = model.CreditLimit;
 
                 if (model.ClientId != null)
@@ -261,7 +263,7 @@ namespace BankAccount.Service.Implementations
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"[BankService.PatchAccount]: {exception.Message}");
+                _logger.LogError(exception, $"[BankService.GetAllAccounts]: {exception.Message}");
                 return new BaseResponse<IEnumerable<AccountViewModel>>
                 {
                     Description = $"{exception.Message}",
@@ -272,29 +274,215 @@ namespace BankAccount.Service.Implementations
         #endregion
 
         #region LegalClient
-        public Task<IBaseResponse<CreateLegalClientViewModel>> CreateLegalClient(CreateLegalClientViewModel model)
+        public async Task<IBaseResponse<CreateLegalClientViewModel>> CreateLegalClient(CreateLegalClientViewModel model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var legalClient = await _legalClientRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Name.Equals(model.Name));
+
+                if (legalClient != null)
+                {
+                    return new BaseResponse<CreateLegalClientViewModel>
+                    {
+                        Description = $"Юридическое лицо с названием \"{model.Name}\" уже существует.",
+                        StatusCode = StatusCode.LegalClientAlreadyExists,
+                    };
+                }
+
+                var client = new ClientEntity
+                {
+                    Type = ClientType.Legal
+                };
+
+                await _clientRepository.Create(client);
+
+                legalClient = new LegalClientEntity
+                {
+                    Id = client.Id,
+                    Name = model.Name,
+                    Address = model.Address,
+                    LeaderFullname = model.LeaderFullname,
+                    ChiefAccountantFullname = model.ChiefAccountantFullname,
+                    Phone = model.Phone,
+                    OwnershipsForm = model.OwnershipsForm
+                };
+
+                await _legalClientRepository.Create(legalClient);
+
+                return new BaseResponse<CreateLegalClientViewModel>
+                {
+                    Description = $"Юридическое лицо с названием \"{model.Name}\" создано.",
+                    StatusCode = StatusCode.Ok,
+                };
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"[BankService.CreateLegalClient]: {exception.Message}");
+                return new BaseResponse<CreateLegalClientViewModel>
+                {
+                    Description = $"{exception.Message}",
+                    StatusCode = StatusCode.InternalServerError,
+                };
+            }
         }
 
-        public Task<IBaseResponse<LegalClientViewModel>> DeleteLegalClient(int id)
+        public async Task<IBaseResponse<LegalClientViewModel>> DeleteLegalClient(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var legalClient = await _legalClientRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == id);
+
+                var client = await _clientRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == id);
+
+                if (client == null || legalClient == null)
+                {
+                    return new BaseResponse<LegalClientViewModel>
+                    {
+                        Description = $"Юридического лица с Id = {id} не существует.",
+                        StatusCode = StatusCode.LegalClientNotFound,
+                    };
+                }
+
+                await _legalClientRepository.Delete(legalClient);
+                await _clientRepository.Delete(client);
+
+                return new BaseResponse<LegalClientViewModel>
+                {
+                    Description = $"Юридическое лицо с Id = {id} удалено.",
+                    StatusCode = StatusCode.Ok,
+                };
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"[BankService.DeleteLegalClient]: {exception.Message}");
+                return new BaseResponse<LegalClientViewModel>
+                {
+                    Description = $"{exception.Message}",
+                    StatusCode = StatusCode.InternalServerError,
+                };
+            }
         }
 
-        public Task<IBaseResponse<UpdateLegalClientViewModel>> UpdateLegalClient(UpdateLegalClientViewModel model)
+        public async Task<IBaseResponse<UpdateLegalClientViewModel>> UpdateLegalClient(UpdateLegalClientViewModel model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var legalClient = await _legalClientRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == model.Id);
+
+                if (legalClient == null)
+                {
+                    return new BaseResponse<UpdateLegalClientViewModel>
+                    {
+                        Description = $"Юридического лица с Id = {model.Id} не существует.",
+                        StatusCode = StatusCode.LegalClientNotFound,
+                    };
+                }
+
+                legalClient.Name = model.Name;
+                legalClient.Address = model.Address;
+                legalClient.LeaderFullname = model.LeaderFullname;
+                legalClient.ChiefAccountantFullname = model.ChiefAccountantFullname;
+                legalClient.Phone = model.Phone;
+                legalClient.OwnershipsForm = model.OwnershipsForm.Value;
+
+                await _legalClientRepository.Update(legalClient);
+
+                return new BaseResponse<UpdateLegalClientViewModel>
+                {
+                    Description = $"Юридическое лицо с Id = {model.Id} обновлено (Update).",
+                    StatusCode = StatusCode.Ok,
+                };
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"[BankService.UpdateLegalClient]: {exception.Message}");
+                return new BaseResponse<UpdateLegalClientViewModel>
+                {
+                    Description = $"{exception.Message}",
+                    StatusCode = StatusCode.InternalServerError,
+                };
+            }
         }
 
-        public Task<IBaseResponse<UpdateLegalClientViewModel>> PatchLegalClient(UpdateLegalClientViewModel model)
+        public async Task<IBaseResponse<UpdateLegalClientViewModel>> PatchLegalClient(UpdateLegalClientViewModel model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var legalClient = await _legalClientRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == model.Id);
+
+                if (legalClient == null)
+                {
+                    return new BaseResponse<UpdateLegalClientViewModel>
+                    {
+                        Description = $"Юридического лица с Id = {model.Id} не существует.",
+                        StatusCode = StatusCode.LegalClientNotFound,
+                    };
+                }
+
+                legalClient.Name = model.Name == null ? legalClient.Name : model.Name;
+                legalClient.Address = model.Address == null ? legalClient.Address : model.Address;
+                legalClient.LeaderFullname = model.LeaderFullname == null ? legalClient.LeaderFullname : model.LeaderFullname;
+                legalClient.ChiefAccountantFullname = model.ChiefAccountantFullname == null ? legalClient.ChiefAccountantFullname
+                    : model.ChiefAccountantFullname;
+                legalClient.Phone = model.Phone == null ? legalClient.Phone : model.Phone;
+                legalClient.OwnershipsForm = model.OwnershipsForm == null ? legalClient.OwnershipsForm : model.OwnershipsForm.Value;
+
+                await _legalClientRepository.Update(legalClient);
+
+                return new BaseResponse<UpdateLegalClientViewModel>
+                {
+                    Description = $"Юридическое лицо с Id = {model.Id} обновлено (Patch).",
+                    StatusCode = StatusCode.Ok,
+                };
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"[BankService.PatchLegalClient]: {exception.Message}");
+                return new BaseResponse<UpdateLegalClientViewModel>
+                {
+                    Description = $"{exception.Message}",
+                    StatusCode = StatusCode.InternalServerError,
+                };
+            }
         }
 
-        public Task<IBaseResponse<IEnumerable<LegalClientViewModel>>> GetAllLegalClients()
+        public async Task<IBaseResponse<IEnumerable<LegalClientViewModel>>> GetAllLegalClients()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var legalClients = await _legalClientRepository.GetAll()
+                    .Select(x => new LegalClientViewModel
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Address = x.Address,
+                        LeaderFullname = x.LeaderFullname,
+                        ChiefAccountantFullname = x.ChiefAccountantFullname,
+                        Phone = x.Phone,
+                        OwnershipsForm = x.OwnershipsForm.GetDisplayName(),
+                    })
+                    .ToListAsync();
+
+                return new BaseResponse<IEnumerable<LegalClientViewModel>>
+                {
+                    Data = legalClients,
+                    StatusCode = StatusCode.Ok,
+                };
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"[BankService.GetAllLegalClients]: {exception.Message}");
+                return new BaseResponse<IEnumerable<LegalClientViewModel>>
+                {
+                    Description = $"{exception.Message}",
+                    StatusCode = StatusCode.InternalServerError,
+                };
+            }
         }
         #endregion
     }
