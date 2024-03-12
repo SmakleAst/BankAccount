@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BankAccount.DAL\BankAccount.DAL.csproj" />
     <ProjectReference Include="..\BankAccount.Domain\BankAccount.Domain.csproj" />
   </ItemGroup>
 

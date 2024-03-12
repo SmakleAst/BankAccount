@@ -7,6 +7,6 @@
         public string OpeningDate { get; set; }
         public float Balance { get; set; }
         public string AccountType { get; set; }
-        public int CreditLimit { get; set; }
+        public int? CreditLimit { get; set; }
     }
 }

@@ -7,15 +7,15 @@ namespace BankAccount.Service.Interfaces
     public interface IBankService
     {
         Task<IBaseResponse<CreateAccountViewModel>> CreateAccount(CreateAccountViewModel model);
-        Task<IBaseResponse<AccountEntity>> DeleteAccount(int id);
-        Task<IBaseResponse<AccountEntity>> UpdateAccount(UpdateAccountViewModel model);
-        Task<IBaseResponse<AccountEntity>> PatchAccount(UpdateAccountViewModel model);
-        Task<IBaseResponse<IEnumerable<AccountEntity>>> GetAllAccounts();
+        Task<IBaseResponse<AccountViewModel>> DeleteAccount(int id);
+        Task<IBaseResponse<UpdateAccountViewModel>> UpdateAccount(UpdateAccountViewModel model);
+        Task<IBaseResponse<UpdateAccountViewModel>> PatchAccount(UpdateAccountViewModel model);
+        Task<IBaseResponse<IEnumerable<AccountViewModel>>> GetAllAccounts();
 
         Task<IBaseResponse<CreateLegalClientViewModel>> CreateLegalClient(CreateLegalClientViewModel model);
-        Task<IBaseResponse<LegalClientEntity>> DeleteLegalClient(int id);
-        Task<IBaseResponse<LegalClientEntity>> UpdateLegalClient(UpdateLegalClientViewModel model);
-        Task<IBaseResponse<LegalClientEntity>> PatchLegalClient(UpdateLegalClientViewModel model);
-        Task<IBaseResponse<IEnumerable<LegalClientEntity>>> GetAllLegalClients();
+        Task<IBaseResponse<LegalClientViewModel>> DeleteLegalClient(int id);
+        Task<IBaseResponse<UpdateLegalClientViewModel>> UpdateLegalClient(UpdateLegalClientViewModel model);
+        Task<IBaseResponse<UpdateLegalClientViewModel>> PatchLegalClient(UpdateLegalClientViewModel model);
+        Task<IBaseResponse<IEnumerable<LegalClientViewModel>>> GetAllLegalClients();
     }
 }
