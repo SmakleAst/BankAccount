@@ -1,5 +1,6 @@
 ﻿using BankAccount.Domain.Enum;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BankAccount.Domain.Entity
 {
@@ -7,9 +8,11 @@ namespace BankAccount.Domain.Entity
     {
         [Key]
         public int Id { get; set; }
+
+        [StringLength(100)]
         public string AccountNumber { get; set; }
         public DateTime OpeningDate { get; set; }
-        public float Balance { get; set; }
+        public decimal Balance { get; set; }
         public AccountType AccountType { get; set; }
         public int? CreditLimit { get; set; }
         public int ClientId { get; set; }

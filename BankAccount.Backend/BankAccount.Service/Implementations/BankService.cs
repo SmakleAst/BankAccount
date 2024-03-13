@@ -17,14 +17,15 @@ namespace BankAccount.Service.Implementations
     {
         private readonly IBaseRepository<ClientEntity> _clientRepository;
         private readonly IBaseRepository<LegalClientEntity> _legalClientRepository;
+        private readonly IBaseRepository<IndividualClientEntity> _individualClientRepository;
         private readonly IBaseRepository<AccountEntity> _accountRepository;
         
         private readonly ILogger<BankService> _logger;
 
         public BankService(IBaseRepository<ClientEntity> clientRepository, IBaseRepository<LegalClientEntity> legalClientRepository,
-            IBaseRepository<AccountEntity> accountRepository, ILogger<BankService> logger) =>
-            (_clientRepository, _legalClientRepository, _accountRepository, _logger) =
-            (clientRepository, legalClientRepository, accountRepository, logger);
+            IBaseRepository<IndividualClientEntity> individualClientRepository, IBaseRepository<AccountEntity> accountRepository, ILogger<BankService> logger) =>
+            (_clientRepository, _legalClientRepository, _individualClientRepository, _accountRepository, _logger) =
+            (clientRepository, legalClientRepository, individualClientRepository, accountRepository, logger);
 
         #region Account
         public async Task<IBaseResponse<CreateAccountViewModel>> CreateAccount(CreateAccountViewModel model)
@@ -270,6 +271,166 @@ namespace BankAccount.Service.Implementations
             }
         }
         #endregion
+
+        public async Task<IBaseResponse<ClientViewModel>> GetOneClient(int id)
+        {
+            try
+            {
+                var client = await _clientRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == id);
+
+                if (client == null)
+                {
+                    return new BaseResponse<ClientViewModel>
+                    {
+                        Description = $"Клиента с Id = {id} не существует",
+                        StatusCode = StatusCode.ClientNotFound,
+                    };
+                }
+
+                if (client.Type == ClientType.Individual)
+                {
+                    var individualClient = await _individualClientRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == id);
+
+                    if (individualClient == null)
+                    {
+                        return new BaseResponse<ClientViewModel>
+                        {
+                            Description = $"Физического лица с Id = {id} не существует",
+                            StatusCode = StatusCode.IndividualClientNotFound,
+                        };
+                    }
+
+                    var clientFullname = string.Join(" ",
+                        new List<string>()
+                        {
+                        individualClient.Surname.ToLower(),
+                        individualClient.Name.ToLower(),
+                        individualClient.Middlename.ToLower()
+                        }
+                    );
+
+                    var legalClient = await _legalClientRepository.GetAll()
+                        .FirstOrDefaultAsync(x => x.ChiefAccountantFullname.ToLower() == clientFullname ||
+                            x.LeaderFullname.ToLower() == clientFullname);
+
+                    var individualClientViewModel = new IndividualClientViewModel
+                    {
+                        Id = individualClient.Id,
+                        Surname = individualClient.Surname,
+                        Name = individualClient.Name,
+                        Middlename = individualClient.Middlename,
+                        BirthDay = individualClient.BirthDay,
+                        Address = individualClient.Address,
+                        Phone = individualClient.Phone,
+                        Gender = individualClient.Gender.GetDisplayName(),
+                        PhotoFilePath = individualClient.PhotoFilePath,
+                        IsBankEmployee = individualClient.IsBankEmployee,
+                        IsDebtor = individualClient.IsDebtor,
+                    };
+
+                    LegalClientViewModel legalClientViewModel = null;
+
+                    if (legalClient != null)
+                    {
+                        legalClientViewModel = new LegalClientViewModel
+                        {
+                            Id = legalClient.Id,
+                            Name = legalClient.Name,
+                            Address = legalClient.Address,
+                            LeaderFullname = legalClient.LeaderFullname,
+                            ChiefAccountantFullname = legalClient.ChiefAccountantFullname,
+                            Phone = legalClient.Phone,
+                            OwnershipsForm = legalClient.OwnershipsForm.GetDisplayName(),
+                        };
+                    }
+
+                    var clientViewModel = new ClientViewModel()
+                    {
+                        LegalClient = legalClientViewModel,
+                        IndividualClient = individualClientViewModel,
+                    };
+
+                    return new BaseResponse<ClientViewModel>
+                    {
+                        Data = clientViewModel,
+                        StatusCode = StatusCode.Ok,
+                    };
+                }
+                else
+                {
+                    var legalClient = await _legalClientRepository.GetAll()
+                        .FirstOrDefaultAsync(x => x.Id == id);
+
+                    if (legalClient == null)
+                    {
+                        return new BaseResponse<ClientViewModel>
+                        {
+                            Description = $"Юридического лица с Id = {id} не существует",
+                            StatusCode = StatusCode.LegalClientNotFound,
+                        };
+                    }
+
+                    var clientFullname = legalClient.LeaderFullname.Split(" ");
+
+                    var individualClient = await _individualClientRepository.GetAll()
+                        .FirstOrDefaultAsync(x => x.Surname.ToLower() == clientFullname[0].ToLower() && x.Name.ToLower() == clientFullname[1].ToLower() &&
+                            x.Middlename.ToLower() == clientFullname[2].ToLower());
+
+                    var legalClientViewModel = new LegalClientViewModel()
+                    {
+                        Id = legalClient.Id,
+                        Name = legalClient.Name,
+                        Address = legalClient.Address,
+                        LeaderFullname = legalClient.LeaderFullname,
+                        ChiefAccountantFullname = legalClient.ChiefAccountantFullname,
+                        Phone = legalClient.Phone,
+                        OwnershipsForm = legalClient.OwnershipsForm.GetDisplayName(),
+                    };
+
+                    IndividualClientViewModel individualClientViewModel = null;
+                    if (individualClient != null)
+                    {
+                        individualClientViewModel = new IndividualClientViewModel
+                        {
+                            Id = individualClient.Id,
+                            Surname = individualClient.Surname,
+                            Name = individualClient.Name,
+                            Middlename = individualClient.Middlename,
+                            BirthDay = individualClient.BirthDay,
+                            Address = individualClient.Address,
+                            Phone = individualClient.Phone,
+                            Gender = individualClient.Gender.GetDisplayName(),
+                            PhotoFilePath = individualClient.PhotoFilePath,
+                            IsBankEmployee = individualClient.IsBankEmployee,
+                            IsDebtor = individualClient.IsDebtor,
+                        };
+                    }
+
+                    var clientViewModel = new ClientViewModel()
+                    {
+                        LegalClient = legalClientViewModel,
+                        IndividualClient = individualClientViewModel,
+                    };
+
+                    return new BaseResponse<ClientViewModel>
+                    {
+                        Data = clientViewModel,
+                        StatusCode = StatusCode.Ok,
+                    };
+                }
+            }
+            catch(Exception exception)
+            {
+                _logger.LogError(exception, $"[BankService.GetOneClient]: {exception.Message}");
+                return new BaseResponse<ClientViewModel>
+                {
+                    Description = $"{exception.Message}",
+                    StatusCode = StatusCode.InternalServerError,
+                };
+            }
+        }
 
         #region LegalClient
         public async Task<IBaseResponse<CreateLegalClientViewModel>> CreateLegalClient(CreateLegalClientViewModel model)

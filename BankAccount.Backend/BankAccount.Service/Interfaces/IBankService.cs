@@ -12,6 +12,8 @@ namespace BankAccount.Service.Interfaces
         Task<IBaseResponse<UpdateAccountViewModel>> PatchAccount(UpdateAccountViewModel model);
         Task<IBaseResponse<IEnumerable<AccountViewModel>>> GetAllAccounts();
 
+        Task<IBaseResponse<ClientViewModel>> GetOneClient(int id);
+
         Task<IBaseResponse<CreateLegalClientViewModel>> CreateLegalClient(CreateLegalClientViewModel model);
         Task<IBaseResponse<LegalClientViewModel>> DeleteLegalClient(int id);
         Task<IBaseResponse<UpdateLegalClientViewModel>> UpdateLegalClient(UpdateLegalClientViewModel model);
