@@ -12,6 +12,7 @@ namespace BankAccount.Domain.Entity
         public float Balance { get; set; }
         public AccountType AccountType { get; set; }
         public int? CreditLimit { get; set; }
+        public int ClientId { get; set; }
 
         public virtual ClientEntity Client { get; set; }
         public virtual List<TransactionEntity> Transactions { get; set; }

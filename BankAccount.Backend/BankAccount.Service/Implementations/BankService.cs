@@ -58,11 +58,11 @@ namespace BankAccount.Service.Implementations
                 account = new AccountEntity
                 {
                     AccountNumber = model.AccountNumber,
-                    OpeningDate = model.OpeningDate,
+                    OpeningDate = DateTime.Now,
                     Balance = model.Balance,
                     AccountType = model.AccountType,
                     CreditLimit = model.CreditLimit,
-                    Client = client,
+                    ClientId = model.ClientId,
                 };
 
                 await _accountRepository.Create(account);
@@ -136,7 +136,6 @@ namespace BankAccount.Service.Implementations
                 }
 
                 account.AccountNumber = model.AccountNumber;
-                account.OpeningDate = model.OpeningDate.Value;
                 account.Balance = model.Balance.Value;
                 account.AccountType = model.AccountType.Value;
                 account.CreditLimit = model.CreditLimit;
@@ -198,7 +197,6 @@ namespace BankAccount.Service.Implementations
                 }
 
                 account.AccountNumber = model.AccountNumber == null ? account.AccountNumber : model.AccountNumber;
-                account.OpeningDate = model.OpeningDate == null ? account.OpeningDate : model.OpeningDate.Value;
                 account.Balance = model.Balance == null ? account.Balance : model.Balance.Value;
                 account.AccountType = model.AccountType == null ? account.AccountType : model.AccountType.Value;
                 account.CreditLimit = model.CreditLimit == null ? account.CreditLimit : model.CreditLimit;

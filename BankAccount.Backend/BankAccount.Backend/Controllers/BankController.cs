@@ -61,7 +61,7 @@ namespace BankAccount.Backend.Controllers
         [HttpPatch]
         public async Task<IActionResult> PatchAccount(UpdateAccountViewModel model)
         {
-            var response = await _bankService.UpdateAccount(model);
+            var response = await _bankService.PatchAccount(model);
 
             if (response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
@@ -111,7 +111,7 @@ namespace BankAccount.Backend.Controllers
         }
 
         [Route("/UpdateLegalClient")]
-        [HttpPost]
+        [HttpPut]
         public async Task<IActionResult> UpdateLegalClient(UpdateLegalClientViewModel model)
         {
             var response = await _bankService.UpdateLegalClient(model);
@@ -125,7 +125,7 @@ namespace BankAccount.Backend.Controllers
         }
 
         [Route("/PatchLegalClient")]
-        [HttpPost]
+        [HttpPatch]
         public async Task<IActionResult> PatchLegalClient(UpdateLegalClientViewModel model)
         {
             var response = await _bankService.PatchLegalClient(model);
@@ -139,10 +139,10 @@ namespace BankAccount.Backend.Controllers
         }
 
         [Route("/GetAllLegalClients")]
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> GetAllLegalClients()
         {
-            var response = await _bankService.GetAllAccounts();
+            var response = await _bankService.GetAllLegalClients();
 
             return Json(new { data = response.Data });
         }
