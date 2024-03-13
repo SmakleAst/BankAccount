@@ -81,10 +81,71 @@ namespace BankAccount.Backend.Controllers
         }
         #endregion
 
-        //Task<IBaseResponse<CreateLegalClientViewModel>> CreateLegalClient(CreateLegalClientViewModel model);
-        //Task<IBaseResponse<LegalClientViewModel>> DeleteLegalClient(int id);
-        //Task<IBaseResponse<UpdateLegalClientViewModel>> UpdateLegalClient(UpdateLegalClientViewModel model);
-        //Task<IBaseResponse<UpdateLegalClientViewModel>> PatchLegalClient(UpdateLegalClientViewModel model);
-        //Task<IBaseResponse<IEnumerable<LegalClientViewModel>>> GetAllLegalClients();
+        #region LegalClient
+        [Route("/CreateLegalClient")]
+        [HttpPost]
+        public async Task<IActionResult> CreateLegalClient(CreateLegalClientViewModel model)
+        {
+            var response = await _bankService.CreateLegalClient(model);
+
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { description = response.Description });
+            }
+
+            return BadRequest(new { description = response.Description });
+        }
+
+        [Route("/DeleteLegalClient")]
+        [HttpPost]
+        public async Task<IActionResult> DeleteLegalClient([FromQuery] int id)
+        {
+            var response = await _bankService.DeleteLegalClient(id);
+
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { description = response.Description });
+            }
+
+            return BadRequest(new { description = response.Description });
+        }
+
+        [Route("/UpdateLegalClient")]
+        [HttpPost]
+        public async Task<IActionResult> UpdateLegalClient(UpdateLegalClientViewModel model)
+        {
+            var response = await _bankService.UpdateLegalClient(model);
+
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { description = response.Description });
+            }
+
+            return BadRequest(new { description = response.Description });
+        }
+
+        [Route("/PatchLegalClient")]
+        [HttpPost]
+        public async Task<IActionResult> PatchLegalClient(UpdateLegalClientViewModel model)
+        {
+            var response = await _bankService.PatchLegalClient(model);
+
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { description = response.Description });
+            }
+
+            return BadRequest(new { description = response.Description });
+        }
+
+        [Route("/GetAllLegalClients")]
+        [HttpPost]
+        public async Task<IActionResult> GetAllLegalClients()
+        {
+            var response = await _bankService.GetAllAccounts();
+
+            return Json(new { data = response.Data });
+        }
+        #endregion
     }
 }
